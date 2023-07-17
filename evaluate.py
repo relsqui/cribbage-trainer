@@ -1,5 +1,6 @@
 import itertools
 
+from cribbage_hand import CribbageHand
 from protocards import cribbage, standard
 
 def get_hand_scores(hand, deck, dealer):
@@ -21,8 +22,8 @@ def get_hand_scores(hand, deck, dealer):
 def yield_discard_options(hand):
   for discard in itertools.combinations(hand, 2):
      yield {
-       "Discard": standard.StandardHand(discard),
-       "Remaining": standard.StandardHand(filter(lambda card: card not in discard, hand))
+       "Discard": CribbageHand(discard),
+       "Remaining": CribbageHand(filter(lambda card: card not in discard, hand))
      }
 
 def choose_discards(hand, remaining_deck, dealer):

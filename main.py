@@ -1,17 +1,11 @@
 import sys
 
 from crib_trainer import crib_trainer
-from protocards import standard
-
-# aces are low
-CRIBBAGE_RANKS = [standard.ACE] + standard.RANKS[:-1]
-
-def score_from_string(hand_string):
-  pass
+from hand_checker import check_hand
 
 def main():
   if len(sys.argv) > 1:
-    score_from_string(sys.argv[1].lower())
+    check_hand(" ".join(sys.argv[1:]))
   else:
     crib_trainer()
 

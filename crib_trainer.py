@@ -1,12 +1,10 @@
 import random
 import sys
 
+from cribbage_hand import CribbageHand, make_cribbage_deck
 from evaluate import choose_discards
 from protocards import standard
 from tabulate import tabulate
-
-# aces are low
-CRIBBAGE_RANKS = [standard.ACE] + standard.RANKS[:-1]
 
 def breaking_input(*args, **kwargs):
   try:
@@ -16,9 +14,9 @@ def breaking_input(*args, **kwargs):
     sys.exit(0)
 
 def test_hand(dealer):
-    deck = standard.make_deck(shuffle=True)
-    hand = deck.deal(6)
-    hand.sort(key = lambda card: CRIBBAGE_RANKS.index(card.rank))
+    deck = make_cribbage_deck(shuffle=True)
+    hand = CribbageHand(deck.deal(6))
+    hand.sort()
     keys = "abcdef"
     print(f"You {'are' if dealer else 'are not'} the dealer. Your hand is:")
     for i in range(6):
@@ -30,7 +28,7 @@ def test_hand(dealer):
 def crib_trainer():
   with open("intro.txt", "r") as f:
     print(f.read())
-  dealer = random.randrange(1) == 0
+  dealer = random.randrange(2) == 0
   while True:
     dealer = not dealer
     test_hand(dealer)

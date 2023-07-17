@@ -1,17 +1,20 @@
 # Cribbage Trainer
 
-This is a little utility for helping me test my intuition about which cards to discard from a cribbage hand, by calculating the expected value of every option.
+This is a little utility for helping me test my intuition about which cards to discard from a cribbage hand by calculating the expected value of every option.
 
-Install requirements and run it with:
+Currently it only looks at the cards you'll have left in your hand after discarding and what the possible turn cards are. It ignores cribs and your opponent's choices.
+
+Install requirements like so:
 
 ```
 python -m pip install -r requirements.txt
-python main.py
 ```
+## Train on random cribbage hands
 
-Example output:
+Call the script with no argument to practice discards.
 
 ```
+$ python main.py
 Welcome to the cribbage trainer! Send EOF (Ctrl-D) or an interrupt (Ctrl-C) at any prompt to exit.
 
 Note that this program only considers the score of the hand right now -- not the crib or the play. Good luck!
@@ -45,4 +48,39 @@ Ks Kh      T7s 2h Kd        0      4  1.47826
 Kh Kd      KT7s 2h          0      4  1.47826
 
 Hit enter for a new hand.
+```
+
+## Get advice about a specific hand
+
+Specify a hand on the command line to get stats about what you could have cribbed.
+
+You can specify card ranks in any case and order. Suits are optional (a suit initial will apply to all the ranks immediately before it). All of these are valid inputs that could describe the same hand:
+* a568qk
+* A8s 56Qc Kd
+* 56Qc A8K
+* a8k 56qc
+
+
+```
+$ python main.py a568qk
+I interpreted that hand as: A 5 6 8 Q K
+I would have cribbed: A 8. Full stats:
+
+Discard    Remaining      Min    Max       EV
+---------  -----------  -----  -----  -------
+A 8        5 6 Q K          4     10  6.53846
+6 8        A 5 Q K          4     10  6.23077
+A 6        5 8 Q K          4     10  6.07692
+Q K        A 5 6 8          4      8  5.30769
+8 Q        A 5 6 K          2      9  4.76923
+8 K        A 5 6 Q          2      9  4.76923
+A Q        5 6 8 K          2      8  4.69231
+A K        5 6 8 Q          2      8  4.69231
+6 Q        A 5 8 K          2      6  4.30769
+6 K        A 5 8 Q          2      6  4.30769
+5 K        A 6 8 Q          2      7  3.92308
+5 Q        A 6 8 K          2      7  3.92308
+A 5        6 8 Q K          0      5  1.84615
+5 6        A 8 Q K          0      4  1.76923
+5 8        A 6 Q K          0      4  1.76923
 ```
