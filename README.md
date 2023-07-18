@@ -52,13 +52,13 @@ Hit enter for a new hand.
 
 ## Get advice about a specific hand
 
-Specify a hand on the command line to get stats about what you could have cribbed.
+Specify a hand on the command line to get stats about what you could have cribbed. Include the rank of each card as a number, J, Q, K, or A, and optionally the suit for a card or group of cards as C, D, H or S after the rank(s). (Both can also be lowercase.)
 
-You can specify card ranks in any case and order. Suits are optional (a suit initial will apply to all the ranks immediately before it). All of these are valid inputs that could describe the same hand:
-* a568qk
-* A8s 56Qc Kd
-* 56Qc A8K
-* a8k 56qc
+All of these are valid inputs that could describe the same hand:
+* A8s 56Qc Kd (all suits specified)
+* 56QCA8KD (all suits specified without spaces)
+* aSq6k58 (unsorted, only the ace's suit specified)
+* a8k 56qc (the space separates specified and unspecified suits)
 
 
 ```
