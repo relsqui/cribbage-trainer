@@ -22,7 +22,7 @@ def test_hand(dealer):
     for i in range(6):
       print(f"  {keys[i]}. {hand[i]}")
     breaking_input("\nConsider your options, then hit enter to see discard stats.\n")
-    discards_table = choose_discards(hand, deck, dealer)
+    discards_table = choose_discards(hand, dealer)
     print(tabulate(discards_table, headers="keys"))
 
 def crib_trainer():

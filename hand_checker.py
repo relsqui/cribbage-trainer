@@ -50,7 +50,6 @@ def hand_from_string(hand_string):
 def check_hand(input_string):
   hand = hand_from_string(input_string)
   print(f"I interpreted that hand as: {hand}")
-  remaining_deck = CribbageHand([card for card in make_cribbage_deck() if card not in hand])
-  discard_table = choose_discards(hand, remaining_deck, False)
+  discard_table = choose_discards(hand, False, show_progress=True)
   print(f"I would have cribbed: {discard_table[0]['Discard']}. Full stats:\n")
   print(tabulate(discard_table, headers = "keys"))
