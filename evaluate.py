@@ -10,35 +10,39 @@ def total_score(score_block):
   return sum(score_block.values())
 
 @memory.cache
-def get_crib_scores(discards, turned, deck, dealer):
+def get_crib_scores(discard_option, turned):
+  discards = discard_option["Discard"]
+  deck = make_cribbage_deck() - discard_option["Remaining"] - turned
   scores = [
-    total_score(cribbage.score_hand(discards + opponent_discards, turned=turned, crib=True, dealer=dealer))
+    total_score(cribbage.score_hand(discards + opponent_discards, turned=turned, crib=True))
     for opponent_discards in itertools.combinations(deck, 2)
   ]
-  min_score = min(scores)
-  max_score = max(scores)
-  ev = sum(scores)/len(scores)
   return {
-    "Min": min_score if dealer else -max_score,
-    "Max": max_score if dealer else -min_score,
-    "EV": ev if dealer else -ev
+    "Min": min(scores),
+    "Max": max(scores),
+    "EV": sum(scores)/len(scores)
   }
 
-def get_hand_scores(hand, turned, dealer):
+def get_hand_score(hand, turned, dealer):
   return total_score(cribbage.score_hand(hand, turned=turned, dealer=dealer))
 
 def get_scores(discard_option, deck, dealer):
-  scores = [{
-      "Hand": get_hand_scores(discard_option["Remaining"], turned=turned, dealer=dealer),
-      "Crib": get_crib_scores(discard_option["Discard"], turned=turned, deck=(make_cribbage_deck() - turned), dealer=dealer)
-    } for turned in deck
-  ]
-  min_hand = min(s["Hand"] for s in scores)
-  max_hand = max(s["Hand"] for s in scores)
-  hand_ev = sum(s["Hand"] for s in scores)/len(scores)
-  min_crib = min(s["Crib"]["Min"] for s in scores)
-  max_crib = min(s["Crib"]["Max"] for s in scores)
-  crib_ev = sum(s["Crib"]["EV"] for s in scores)/len(scores)
+  hand_scores = []
+  crib_mins = []
+  crib_maxes = []
+  crib_evs = []
+  for turned in deck:
+    hand_scores.append(get_hand_score(discard_option["Remaining"], turned=turned, dealer=dealer))
+    crib_scores = get_crib_scores(discard_option, turned=turned)
+    crib_mins.append(crib_scores["Min"] if dealer else -crib_scores["Max"])
+    crib_maxes.append(crib_scores["Max"] if dealer else -crib_scores["Min"])
+    crib_evs.append(crib_scores["EV"] if dealer else -crib_scores["EV"])
+  min_hand = min(hand_scores)
+  max_hand = max(hand_scores)
+  hand_ev = sum(hand_scores)/len(hand_scores)
+  min_crib = min(crib_mins)
+  max_crib = max(crib_maxes)
+  crib_ev = sum(crib_evs)/len(crib_evs)
   return {
     "H Min": min_hand,
     "H Max": max_hand,
@@ -60,7 +64,8 @@ def yield_discard_options(hand):
       "Remaining": remaining_hand
     }
 
-def choose_discards(hand, dealer, show_progress=False):
+@memory.cache(ignore=["show_progress"])
+def choose_discards(hand, dealer=False, show_progress=False):
   remaining_deck = CribbageHand([card for card in make_cribbage_deck() if card not in hand])
   discards_table = []
   if show_progress:

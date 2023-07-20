@@ -17,11 +17,15 @@ It does not consider:
 * How likely your opponent is to crib one card vs. another
 * The score
 
-So its expected values for subtler real-life situations will be wrong.
+In situations where those things are important (say, when you only need four points to win the game), this script's hand evaluations won't be as helpful.
 
 ### Speed and storage
 
-Because it's exhaustively checking a lot of possibilities, the script is slow, especially the first few times you run it. It caches results in `~/.cribbage-trainer-cache` so it gets faster over time, at the cost of storage in that directory. Feel free to delete the cache at any time to trade back the speed for the storage.
+Because it's exhaustively calculating a lot of possibilities, the script is slow, especially the first few times you run it. It caches results in `~/.cribbage-trainer-cache` so it gets faster over time, at the cost of storage in that directory.
+
+To speed up future usage, run the script with `--fill-cache` to pre-fill the cache. You can interrupt this and restart at any time, it won't recalculate anything already cached.
+
+To sacrifice the speed increase and get the storage back, delete the cache directory.
 
 ## Usage
 
@@ -33,9 +37,42 @@ Install requirements like so:
 python -m pip install -r requirements.txt
 ```
 
+### Summary
+
+```
+$ python main.py --help
+Usage: main.py [OPTIONS] [HAND]...
+
+  Find more details at: https://github.com/relsqui/cribbage-trainer
+
+  If you provide a string describing a cribbage hand, this program prints the
+  table of expected values for each possible discard (assuming the opponent is
+  dealer; use --dealer to override). Describe hands using a letter or number
+  for each rank (A2..9TJQK). Adding a suit letter (cdhs) after any group of
+  ranks is optional (arbitrary suits will be assigned if you omit them). The
+  case and order of cards doesn't otherwise matter.
+
+  If no hand is given, generates random cribbage hands and shows the expected
+  value table for each hand after a pause to let you think about it.
+
+  Both of these are slow because they evaluate many options. You can pre-fill
+  the cache and make future usage faster by running with --fill-cache. (This
+  is safe to interrupt and resume at any time, it will by definition skip
+  anything already cached.)
+
+Options:
+  --dealer      If set, hand will be checked as if the player is the dealer.
+                Otherwise, opponent will be dealer.
+  --fill-cache  Non-interactively evaluate hands to fill the score cache. This
+                makes other queries faster.
+  --help        Show this message and exit.
+```
+
 ### Get advice about a specific hand
 
 Specify a hand on the command line to get stats about what you could have cribbed. Include the rank of each card as a number, J, Q, K, or A, and optionally the suit for a card or group of cards as C, D, H or S after the rank(s). (Both can also be lowercase.)
+
+The script will assign arbitrary suits to any cards where you didn't specify them, distributing them carefully to avoid creating a flush.
 
 All of these are valid inputs that could describe the same hand:
 * A8s 56Qc Kd (all suits specified)
@@ -82,12 +119,12 @@ Send EOF (Ctrl-D) or an interrupt (Ctrl-C) at any prompt to exit.
 Note that this program only considers hands and cribs -- not points in the play.
 
 You are not the dealer. Your hand is:
-  a. Two of Spades
-  b. Seven of Spades
-  c. Seven of Diamonds
-  d. Nine of Spades
-  e. Ten of Diamonds
-  f. King of Diamonds
+  Two of Spades
+  Seven of Spades
+  Seven of Diamonds
+  Nine of Spades
+  Ten of Diamonds
+  King of Diamonds
 
 Consider your options, then hit enter to see discard stats.
 Evaluating 15 possibilities ...............

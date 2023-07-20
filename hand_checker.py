@@ -67,6 +67,7 @@ def check_hand(input_string, dealer=False):
   print(f"I interpreted that hand as: {hand}")
   hand = assign_suits(hand)
   print(f"Assigning arbitrary suits: {hand}")
+  hand.sort()
   discard_table = choose_discards(hand, dealer=dealer, show_progress=True)
   print(f"I would have cribbed: {discard_table[0]['Discard']}. Full stats:\n")
   print(tabulate(discard_table, headers = "keys"))

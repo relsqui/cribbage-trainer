@@ -1,4 +1,3 @@
-import random
 import sys
 
 from cribbage_hand import CribbageHand, make_cribbage_deck
@@ -22,10 +21,11 @@ def test_hand(dealer):
     deck = make_cribbage_deck(shuffle=True)
     hand = CribbageHand(deck.deal(6))
     hand.sort()
-    keys = "abcdef"
+    # keys = "abcdef"
     print(f"You {'are' if dealer else 'are not'} the dealer. Your hand is:")
     for i in range(6):
-      print(f"  {keys[i]}. {hand[i]}")
+      # print(f"  {keys[i]}. {hand[i]}")
+      print(f"  {hand[i]}")
     breaking_input("\nConsider your options, then hit enter to see discard stats.")
     discards_table = choose_discards(hand, dealer, show_progress=True)
     print()
