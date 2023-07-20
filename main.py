@@ -9,8 +9,8 @@ Otherwise, generates cribbage hands and shows the expected value table for each 
 a pause to let you think about it.
 
 Describe hands using a letter or number for each rank (A2..9TJQK). Adding a suit letter
-(cdhs) after a group of ranks is optional but makes the results more accurate. The case and
-order of cards doesn't matter (except for associating suits with ranks).
+(cdhs) after a group of ranks is optional -- arbitrary suits will be assigned if you
+omit them. The case and order of cards doesn't matter (except for associating suits with ranks).
 """
 
 @click.command(epilog=help_text)

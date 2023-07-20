@@ -46,10 +46,27 @@ def hand_from_string(hand_string):
     hand.append(CribbageCard(rank, NULL_SUIT))
   return hand
 
+def assign_suits(hand):
+  # sort so the same hand in a different order can hit cache
+  hand = CribbageHand(sorted(hand))
+  suit_counts = {
+    # kind of a silly workaround for suits being unhashable
+    index: len(hand.by_rank(suit)) for index, suit in enumerate(standard.SUITS)
+  }
+  for hand_index, card in enumerate(hand):
+    # can't compare to NULL_SUIT because of its __eq__
+    if type(card.suit) == NullSuit:
+      suit_index = min(suit_counts, key=suit_counts.get)
+      # can't just set the suit because it sets name etc. in __init__
+      hand[hand_index] = CribbageCard(card.rank, standard.SUITS[suit_index])
+      suit_counts[suit_index] += 1
+  return hand
 
 def check_hand(input_string, dealer=False):
   hand = hand_from_string(input_string)
   print(f"I interpreted that hand as: {hand}")
+  hand = assign_suits(hand)
+  print(f"Assigning arbitrary suits: {hand}")
   discard_table = choose_discards(hand, dealer=dealer, show_progress=True)
   print(f"I would have cribbed: {discard_table[0]['Discard']}. Full stats:\n")
   print(tabulate(discard_table, headers = "keys"))
