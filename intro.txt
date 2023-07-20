@@ -1,2 +1,0 @@
-Welcome to the cribbage trainer! Send EOF (Ctrl-D) or an interrupt (Ctrl-C) at any prompt to exit.
-Note that this program only considers the score of the hand -- not the crib or the play. Good luck!

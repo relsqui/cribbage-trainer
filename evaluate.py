@@ -4,7 +4,7 @@ import joblib
 from cribbage_hand import CribbageHand, make_cribbage_deck
 from protocards import cribbage
 
-memory = joblib.Memory("~/.protocards-cache", verbose=0)
+memory = joblib.Memory("~/.cribbage-trainer-cache", verbose=0)
 
 @memory.cache
 def get_crib_scores(discards, turned, deck, dealer):
@@ -72,7 +72,8 @@ def choose_discards(hand, dealer, show_progress=False):
   if show_progress:
     print(f"Evaluating {int((len(hand)*(len(hand)-1))/2)} possibilities ", end="")
   for discard_option in yield_discard_options(hand):
-    print(".", end="", flush=True)
+    if show_progress:
+      print(".", end="", flush=True)
     discard_option.update(get_hand_scores(discard_option, remaining_deck, dealer))
     discards_table.append(discard_option)
   if show_progress:

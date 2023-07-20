@@ -1,56 +1,39 @@
 # Cribbage Trainer
 
+## Purpose and limitations
+
 This is a little utility for helping me test my intuition about which cards to discard from a cribbage hand by calculating the expected value of every option.
 
-Currently it only looks at the cards you'll have left in your hand after discarding and what the possible turn cards are. It ignores cribs and your opponent's choices.
+### Accuracy
+
+This script considers:
+* The cards remaining in your hand
+* Possible turn cards
+* Possible cribs
+* Who's dealing
+
+It does not consider:
+* Points you could score in the play
+* How likely your opponent is to crib one card vs. another
+* The score
+
+So its expected values for subtler real-life situations will be wrong.
+
+### Speed and storage
+
+Because it's exhaustively checking a lot of possibilities, the script is slow, especially the first few times you run it. It caches results in `~/.cribbage-trainer-cache` so it gets faster over time, at the cost of storage in that directory. Feel free to delete the cache at any time to trade back the speed for the storage.
+
+## Usage
+
+### Installation
 
 Install requirements like so:
 
 ```
 python -m pip install -r requirements.txt
 ```
-## Train on random cribbage hands
 
-Call the script with no argument to practice discards.
-
-```
-$ python main.py
-Welcome to the cribbage trainer! Send EOF (Ctrl-D) or an interrupt (Ctrl-C) at any prompt to exit.
-
-Note that this program only considers the score of the hand right now -- not the crib or the play. Good luck!
-
-Your hand is:
-  a. Two of Hearts
-  b. Seven of Spades
-  c. Ten of Spades
-  d. King of Spades
-  e. King of Diamonds
-  f. King of Hearts
-
-Consider your options, then hit enter to see discard stats.
-
-Discard    Remaining      Min    Max       EV
----------  -----------  -----  -----  -------
-T7s        Ks K2h Kd        6     12  7.30435
-7s 2h      KTs Kh Kd        6     14  6.95652
-Ts 2h      K7s Kh Kd        6     12  6.95652
-KTs        7s K2h Kd        2      6  3.3913
-Ts Kd      K7s K2h          2      6  3.3913
-Ts Kh      K7s 2h Kd        2      6  3.3913
-K7s        Ts K2h Kd        2      8  3.3913
-7s Kd      KTs K2h          2      8  3.3913
-7s Kh      KTs 2h Kd        2      8  3.3913
-Ks 2h      T7s Kh Kd        2      8  3.04348
-2h Kd      KT7s Kh          2      8  3.04348
-K2h        KT7s Kd          2      8  3.04348
-Ks Kd      T7s K2h          0      4  1.47826
-Ks Kh      T7s 2h Kd        0      4  1.47826
-Kh Kd      KT7s 2h          0      4  1.47826
-
-Hit enter for a new hand.
-```
-
-## Get advice about a specific hand
+### Get advice about a specific hand
 
 Specify a hand on the command line to get stats about what you could have cribbed. Include the rank of each card as a number, J, Q, K, or A, and optionally the suit for a card or group of cards as C, D, H or S after the rank(s). (Both can also be lowercase.)
 
@@ -64,23 +47,67 @@ All of these are valid inputs that could describe the same hand:
 ```
 $ python main.py a568qk
 I interpreted that hand as: A 5 6 8 Q K
+Evaluating 15 possibilities ...............
 I would have cribbed: A 8. Full stats:
 
-Discard    Remaining      Min    Max       EV
----------  -----------  -----  -----  -------
-A 8        5 6 Q K          4     10  6.53846
-6 8        A 5 Q K          4     10  6.23077
-A 6        5 8 Q K          4     10  6.07692
-Q K        A 5 6 8          4      8  5.30769
-8 Q        A 5 6 K          2      9  4.76923
-8 K        A 5 6 Q          2      9  4.76923
-A Q        5 6 8 K          2      8  4.69231
-A K        5 6 8 Q          2      8  4.69231
-6 Q        A 5 8 K          2      6  4.30769
-6 K        A 5 8 Q          2      6  4.30769
-5 K        A 6 8 Q          2      7  3.92308
-5 Q        A 6 8 K          2      7  3.92308
-A 5        6 8 Q K          0      5  1.84615
-5 6        A 8 Q K          0      4  1.76923
-5 8        A 6 Q K          0      4  1.76923
+Discard    Remaining      H Min    H Max     H EV    C Min    C Max      C EV    Min    Max         EV
+---------  -----------  -------  -------  -------  -------  -------  --------  -----  -----  ---------
+A 8        5 6 Q K            4       10  6.53846      -18        0  -4.23059    -14     10   2.30787
+A 6        5 8 Q K            4       10  6.07692      -16        0  -4.3971     -12     10   1.67982
+Q K        A 5 6 8            4        8  5.30769      -20        0  -4.10552    -16      8   1.20217
+6 8        A 5 Q K            4       10  6.23077      -24        0  -5.04851    -20     10   1.18226
+8 K        A 5 6 Q            2        9  4.76923      -14        0  -3.65104    -12      9   1.11819
+8 Q        A 5 6 K            2        9  4.76923      -14        0  -3.75385    -12      9   1.01538
+A K        5 6 8 Q            2        8  4.69231      -14        0  -3.87186    -12      8   0.820452
+A Q        5 6 8 K            2        8  4.69231      -14        0  -3.97466    -12      8   0.717647
+6 K        A 5 8 Q            2        6  4.30769      -16        0  -3.73538    -14      6   0.572308
+6 Q        A 5 8 K            2        6  4.30769      -16        0  -3.83819    -14      6   0.469502
+5 K        A 6 8 Q            2        7  3.92308      -28       -2  -7.15475    -26      5  -3.23167
+5 Q        A 6 8 K            2        7  3.92308      -28       -2  -7.25756    -26      5  -3.33448
+A 5        6 8 Q K            0        5  1.84615      -20       -2  -5.86787    -20      3  -4.02172
+5 8        A 6 Q K            0        4  1.76923      -20       -2  -5.8686     -20      2  -4.09937
+5 6        A 8 Q K            0        4  1.76923      -24       -2  -7.28036    -24      2  -5.51113
+```
+
+### Train on random cribbage hands
+
+Call the script with no argument to practice discards.
+
+```
+$ python main.py
+
+Welcome to the cribbage trainer. Good luck!
+Send EOF (Ctrl-D) or an interrupt (Ctrl-C) at any prompt to exit.
+Note that this program only considers hands and cribs -- not points in the play.
+
+You are not the dealer. Your hand is:
+  a. Two of Spades
+  b. Seven of Spades
+  c. Seven of Diamonds
+  d. Nine of Spades
+  e. Ten of Diamonds
+  f. King of Diamonds
+
+Consider your options, then hit enter to see discard stats.
+Evaluating 15 possibilities ...............
+
+Discard    Remaining      H Min    H Max     H EV    C Min    C Max      C EV    Min    Max          EV
+---------  -----------  -------  -------  -------  -------  -------  --------  -----  -----  ----------
+Td Kd      2s 7s 7d 9s        2       12  4.17391      -20        0  -3.62398    -18     12   0.549934
+2s Kd      7s 7d 9s Td        2       14  4.26087      -14        0  -4.10791    -12     14   0.152964
+9s Kd      2s 7s 7d Td        2        6  3.65217      -14        0  -3.63043    -12      6   0.0217391
+2s Td      7s 7d 9s Kd        2       12  3.82609      -14        0  -4.30079    -12     12  -0.474704
+2s 9s      7s 7d Td Kd        2        6  3.30435      -20        0  -4.35494    -18      6  -1.05059
+7s Kd      2s 7d 9s Td        0        6  2.13043      -14        0  -3.65507    -14      6  -1.52464
+9s Td      2s 7s 7d Kd        2        6  3.65217      -17        0  -5.1859     -15      6  -1.53373
+7d Kd      2s 7s 9s Td        0        6  2.13043      -15        0  -3.6946     -15      6  -1.56416
+7s Td      2s 7d 9s Kd        0        5  1.78261      -14        0  -3.79025    -14      5  -2.00764
+7d Td      2s 7s 9s Kd        0        5  1.78261      -15        0  -3.82978    -15      5  -2.04717
+2s 7d      7s 9s Td Kd        0        6  1.78261      -16        0  -4.43426    -16      6  -2.65165
+2s 7s      7d 9s Td Kd        0        6  1.78261      -16        0  -4.47378    -16      6  -2.69117
+7d 9s      2s 7s Td Kd        0        4  1.52174      -24        0  -4.46179    -24      4  -2.94005
+7s 9s      2s 7d Td Kd        0        4  1.52174      -24        0  -4.50132    -24      4  -2.97958
+7s 7d      2s 9s Td Kd        0        4  2.08696      -24       -2  -6.3863     -24      2  -4.29934
+
+Hit enter for a new hand.
 ```
