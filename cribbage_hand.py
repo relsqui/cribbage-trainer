@@ -16,6 +16,12 @@ class CribbageHand(standard.StandardHand):
     sorted_hand = sorted(self)
     return " ".join([f"{card.rank.short}{card.suit.short}" for card in sorted_hand])
 
+  def __sub__(self, other):
+    difference = CribbageHand(self)
+    for card in other:
+      difference.remove(card)
+    return difference
+
 def make_cribbage_deck(shuffle=False):
   # this is just standard.make_deck with CribbageHand/CribbageCard
   deck = CribbageHand([CribbageCard(rank, suit) for rank, suit in itertools.product(CRIBBAGE_RANKS, standard.SUITS)])

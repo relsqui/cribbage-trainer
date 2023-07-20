@@ -50,6 +50,6 @@ def hand_from_string(hand_string):
 def check_hand(input_string):
   hand = hand_from_string(input_string)
   print(f"I interpreted that hand as: {hand}")
-  discard_table = choose_discards(hand, False, show_progress=True)
+  discard_table = choose_discards(hand, dealer=False, show_progress=True)
   print(f"I would have cribbed: {discard_table[0]['Discard']}. Full stats:\n")
   print(tabulate(discard_table, headers = "keys"))

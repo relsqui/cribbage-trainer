@@ -58,14 +58,16 @@ def get_hand_scores(discard_option, deck, dealer):
 
 def yield_discard_options(hand):
   for discard in itertools.combinations(hand, 2):
-     yield {
-       "Discard": CribbageHand(discard),
-       "Remaining": CribbageHand(filter(lambda card: card not in discard, hand))
-     }
+    discard_hand = CribbageHand(discard)
+    remaining_hand = hand - discard_hand
+    yield {
+      "Discard": discard_hand,
+      "Remaining": remaining_hand
+    }
 
 @memory.cache
 def choose_discards(hand, dealer, show_progress=False):
-  remaining_deck = CribbageHand([card for card in make_cribbage_deck(shuffle=False) if card not in hand])
+  remaining_deck = CribbageHand([card for card in make_cribbage_deck() if card not in hand])
   discards_table = []
   if show_progress:
     print(f"Evaluating {int((len(hand)*(len(hand)-1))/2)} possibilities ", end="")
