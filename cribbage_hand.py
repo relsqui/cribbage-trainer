@@ -18,9 +18,17 @@ class CribbageHand(standard.StandardHand):
 
   def __sub__(self, other):
     difference = CribbageHand(self)
-    for card in other:
-      difference.remove(card)
+    if other in difference:
+      difference.remove(other)
+    else:
+      for card in other:
+        difference.remove(card)
     return difference
+
+  def __add__(self, other):
+    sum = CribbageHand(self)
+    sum.extend(other)
+    return sum
 
 def make_cribbage_deck(shuffle=False):
   # this is just standard.make_deck with CribbageHand/CribbageCard

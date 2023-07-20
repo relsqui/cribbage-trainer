@@ -6,44 +6,39 @@ from protocards import cribbage
 
 memory = joblib.Memory("~/.cribbage-trainer-cache", verbose=0)
 
+def total_score(score_block):
+  return sum(score_block.values())
+
 @memory.cache
 def get_crib_scores(discards, turned, deck, dealer):
-  deck.shuffle()
-  min_score = 40
-  max_score = 0
-  ev = 0
-  outcome_count = (len(deck) * (len(deck) - 1))/2
-  for opponent_discards in itertools.combinations(deck, 2):
-    crib = CribbageHand(discards + opponent_discards)
-    score = sum(cribbage.score_hand(crib, turned=turned, crib=True, dealer=dealer).values())
-    min_score = min(min_score, score)
-    max_score = max(max_score, score)
-    ev += score/outcome_count
+  scores = [
+    total_score(cribbage.score_hand(discards + opponent_discards, turned=turned, crib=True, dealer=dealer))
+    for opponent_discards in itertools.combinations(deck, 2)
+  ]
+  min_score = min(scores)
+  max_score = max(scores)
+  ev = sum(scores)/len(scores)
   return {
     "Min": min_score if dealer else -max_score,
     "Max": max_score if dealer else -min_score,
     "EV": ev if dealer else -ev
   }
 
-@memory.cache
-def get_hand_scores(discard_option, deck, dealer):
-  min_hand = 40
-  max_hand = 0
-  hand_ev = 0
-  min_crib = 40
-  max_crib = -40
-  crib_ev = 0
-  outcome_count = len(deck)
-  for turned in deck:
-    hand_score = sum(cribbage.score_hand(discard_option["Remaining"], turned=turned, dealer=dealer).values())
-    min_hand = min(min_hand, hand_score)
-    max_hand = max(max_hand, hand_score)
-    hand_ev += hand_score/outcome_count
-    remaining_deck = CribbageHand([card for card in deck if card is not turned])
-    crib_scores = get_crib_scores(discard_option["Discard"], turned=turned, deck=remaining_deck, dealer=dealer)
-    min_crib = min(min_crib, crib_scores["Min"])
-    max_crib = max(max_crib, crib_scores["Max"])
-    crib_ev += crib_scores["EV"]/outcome_count
+def get_hand_scores(hand, turned, dealer):
+  return total_score(cribbage.score_hand(hand, turned=turned, dealer=dealer))
+
+def get_scores(discard_option, deck, dealer):
+  scores = [{
+      "Hand": get_hand_scores(discard_option["Remaining"], turned=turned, dealer=dealer),
+      "Crib": get_crib_scores(discard_option["Discard"], turned=turned, deck=(make_cribbage_deck() - turned), dealer=dealer)
+    } for turned in deck
+  ]
+  min_hand = min(s["Hand"] for s in scores)
+  max_hand = max(s["Hand"] for s in scores)
+  hand_ev = sum(s["Hand"] for s in scores)/len(scores)
+  min_crib = min(s["Crib"]["Min"] for s in scores)
+  max_crib = min(s["Crib"]["Max"] for s in scores)
+  crib_ev = sum(s["Crib"]["EV"] for s in scores)/len(scores)
   return {
     "H Min": min_hand,
     "H Max": max_hand,
@@ -65,7 +60,6 @@ def yield_discard_options(hand):
       "Remaining": remaining_hand
     }
 
-@memory.cache
 def choose_discards(hand, dealer, show_progress=False):
   remaining_deck = CribbageHand([card for card in make_cribbage_deck() if card not in hand])
   discards_table = []
@@ -74,7 +68,7 @@ def choose_discards(hand, dealer, show_progress=False):
   for discard_option in yield_discard_options(hand):
     if show_progress:
       print(".", end="", flush=True)
-    discard_option.update(get_hand_scores(discard_option, remaining_deck, dealer))
+    discard_option.update(get_scores(discard_option, remaining_deck, dealer))
     discards_table.append(discard_option)
   if show_progress:
     print()
