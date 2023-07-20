@@ -3,7 +3,7 @@ import itertools
 
 from crib_trainer import crib_trainer
 from cribbage_hand import CribbageHand, make_cribbage_deck
-from evaluate import choose_discards
+from evaluate import choose_discards, memory
 from hand_checker import check_hand
 
 help_text = """
@@ -20,7 +20,8 @@ each hand after a pause to let you think about it.
 
 Both of these are slow because they evaluate many options. You can pre-fill the cache
 and make future usage faster by running with --fill-cache. (This is safe to interrupt
-and resume at any time, it will by definition skip anything already cached.)
+and resume at any time, it will by definition skip anything already cached.) The opposite
+is --empty-cache.
 """
 
 def build_cache():
@@ -31,13 +32,20 @@ def build_cache():
       choose_discards(hand)
       print("Done.")
 
+def clear_cache():
+  memory.clear(warn=False)
+  print("Cache emptied.")
+
 @click.command(help=help_text)
+@click.option("--empty-cache", is_flag=True, help="Clear the score cache. This will free up disk space, but make this program slower.")
 @click.option("--dealer", is_flag=True, help="If set, hand will be checked as if the player is the dealer. Otherwise, opponent will be dealer.")
 @click.option("--fill-cache", is_flag=True, help="Non-interactively evaluate hands to fill the score cache. This makes other queries faster.")
 @click.argument("hand", nargs=-1)
-def main(hand, dealer=False, fill_cache=False):
+def main(hand, dealer=False, fill_cache=False, empty_cache=False):
   if fill_cache:
      build_cache()
+  elif empty_cache:
+     clear_cache()
   elif len(hand):
     check_hand(" ".join(hand), dealer)
   else:

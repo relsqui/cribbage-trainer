@@ -23,9 +23,7 @@ In situations where those things are important (say, when you only need four poi
 
 Because it's exhaustively calculating a lot of possibilities, the script is slow, especially the first few times you run it. It caches results in `~/.cribbage-trainer-cache` so it gets faster over time, at the cost of storage in that directory.
 
-To speed up future usage, run the script with `--fill-cache` to pre-fill the cache. You can interrupt this and restart at any time, it won't recalculate anything already cached.
-
-To sacrifice the speed increase and get the storage back, delete the cache directory.
+To speed up future usage, run the script with `--fill-cache` to pre-fill the cache. You can interrupt this and restart at any time, it won't recalculate anything already cached. To sacrifice the speed increase and get the storage back, use `--empty-cache`.
 
 ## Usage
 
@@ -58,14 +56,16 @@ Usage: main.py [OPTIONS] [HAND]...
   Both of these are slow because they evaluate many options. You can pre-fill
   the cache and make future usage faster by running with --fill-cache. (This
   is safe to interrupt and resume at any time, it will by definition skip
-  anything already cached.)
+  anything already cached.) The opposite is --empty-cache.
 
 Options:
-  --dealer      If set, hand will be checked as if the player is the dealer.
-                Otherwise, opponent will be dealer.
-  --fill-cache  Non-interactively evaluate hands to fill the score cache. This
-                makes other queries faster.
-  --help        Show this message and exit.
+  --empty-cache  Clear the score cache. This will free up disk space, but make
+                 this program slower.
+  --dealer       If set, hand will be checked as if the player is the dealer.
+                 Otherwise, opponent will be dealer.
+  --fill-cache   Non-interactively evaluate hands to fill the score cache.
+                 This makes other queries faster.
+  --help         Show this message and exit.
 ```
 
 ### Get advice about a specific hand
