@@ -4,7 +4,7 @@ import joblib
 from cribbage_hand import CribbageHand, make_cribbage_deck
 from protocards import cribbage
 
-memory = joblib.Memory("~/.cribbage-trainer-cache", verbose=0)
+memory = joblib.Memory("~/.cribbage-trainer-cache", verbose=0, compress=9)
 
 def total_score(score_block):
   return sum(score_block.values())
@@ -64,7 +64,6 @@ def yield_discard_options(hand):
       "Remaining": remaining_hand
     }
 
-@memory.cache(ignore=["show_progress"])
 def choose_discards(hand, dealer=False, show_progress=False):
   remaining_deck = CribbageHand([card for card in make_cribbage_deck() if card not in hand])
   discards_table = []
